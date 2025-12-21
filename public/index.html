@@ -1,31 +1,145 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Teaching Bot</title>
+  <meta charset="UTF-8" />
+  <title>Gemini Teaching Bot</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      padding-top: 50px;
+    }
+
+    .container {
+      background: #ffffff;
+      width: 500px;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 80px;
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      resize: none;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      background: #007bff;
+      color: white;
+      border: none;
+      font-size: 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background: #999;
+    }
+
+    .response {
+      margin-top: 15px;
+      padding: 10px;
+      background: #f1f1f1;
+      border-radius: 5px;
+      min-height: 60px;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      max-height: 300px;
+    }
+
+    .loading {
+      font-style: italic;
+      color: #555;
+    }
+
+    .error {
+      color: red;
+    }
+  </style>
 </head>
 <body>
 
-<h2>Gemini Teaching Bot</h2>
+<div class="container">
+  <h2>📘 Gemini Teaching Bot</h2>
 
-<input id="q" placeholder="Ask a question" />
-<button onclick="ask()">Ask</button>
+  <textarea id="q" placeholder="Ask a question..."></textarea>
+  <button id="btn" onclick="ask()">Ask</button>
 
-<p id="ans"></p>
+  <div id="ans" class="response"></div>
+</div>
 
 <script>
 async function ask() {
-  const q = document.getElementById("q").value;
+  const q = document.getElementById("q").value.trim();
+  const ans = document.getElementById("ans");
+  const btn = document.getElementById("btn");
 
-  const res = await fetch("/api/teach", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: q })
-  });
+  if (!q) {
+    ans.innerHTML = "<span class='error'>Please enter a question.</span>";
+    return;
+  }
 
-  const data = await res.json();
-  document.getElementById("ans").innerText = data.reply;
+  btn.disabled = true;
+  ans.innerHTML = "<span class='loading'>Thinking...</span>";
+
+  try {
+    const res = await fetch("/api/teach", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: q })
+    });
+
+    if (!res.ok) throw new Error("Server error");
+
+    const data = await res.json();
+    ans.textContent = data.reply;
+
+  } catch (err) {
+    ans.innerHTML = "<span class='error'>Error connecting to server.</span>";
+  } finally {
+    btn.disabled = false;
+  }
 }
+</script>
 
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyBex-nBxG0KsfaVJlnbeD4fGA4_25KqZs0",
+    authDomain: "ai-bot-35470.firebaseapp.com",
+    projectId: "ai-bot-35470",
+    storageBucket: "ai-bot-35470.firebasestorage.app",
+    messagingSenderId: "1052394221458",
+    appId: "1:1052394221458:web:5a401b3f3c31b2c4265b4b",
+    measurementId: "G-VP06WZP73Y"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
 </script>
 </body>
 </html>
