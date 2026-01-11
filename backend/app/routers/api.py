@@ -3,9 +3,9 @@ from fastapi.responses import FileResponse, JSONResponse
 import shutil
 import os
 import uuid
-from backend.app.services.docx_service import extract_text_from_docx, apply_journal_formatting
-from backend.app.services.ai_service import ai_service
-from backend.app.core.config import settings
+from app.services.docx_service import extract_text_from_docx, apply_journal_formatting
+from app.services.ai_service import ai_service
+from app.core.config import settings
 
 router = APIRouter()
 
