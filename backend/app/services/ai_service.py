@@ -18,7 +18,7 @@ generation_config = {
 class AIService:
     def __init__(self):
         self.model = genai.GenerativeModel(
-            model_name="gemini-2.5-flash", 
+            model_name="gemini-3-flash", 
             generation_config=generation_config,
             system_instruction="""
             You are an expert academic editor and formatter. 
